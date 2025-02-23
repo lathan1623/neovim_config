@@ -52,11 +52,10 @@ require("lazy").setup({
             build = ':TSUpdate',
             main = 'nvim-treesitter.configs',
             opts = {
-                ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go', 'java', 'javascript', 'typescript' },
+                ensure_installed = { 'rust', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go', 'java', 'javascript', 'typescript' },
                 auto_install = true,
                 highlight = {
                     enable = true,
-                    disable = { "rust" },
                 }
             },
         },
@@ -103,23 +102,6 @@ require("lazy").setup({
             end
         },
         {
-            "ThePrimeagen/harpoon",
-            branch = "harpoon2",
-            dependencies = { "nvim-lua/plenary.nvim" },
-            config = function()
-                local harpoon = require("harpoon")
-
-                harpoon:setup()
-
-                vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
-                vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
-                vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
-                vim.keymap.set("n", "<C-j>", function() harpoon:list():select(2) end)
-                vim.keymap.set("n", "<C-k>", function() harpoon:list():select(3) end)
-                vim.keymap.set("n", "<C-l>", function() harpoon:list():select(4) end)
-            end
-        },
-        {
             'williamboman/mason.nvim',
             lazy = false,
             opts = {},
@@ -131,6 +113,7 @@ require("lazy").setup({
             event = 'InsertEnter',
             config = function()
                 local cmp = require('cmp')
+                local SelectBehavior = require('cmp.types.cmp').SelectBehavior
 
                 cmp.setup({
                     sources = {
@@ -140,6 +123,10 @@ require("lazy").setup({
                         ['<C-Space>'] = cmp.mapping.complete(),
                         ['<C-u>'] = cmp.mapping.scroll_docs(-4),
                         ['<C-d>'] = cmp.mapping.scroll_docs(4),
+                        ['<C-e>'] = cmp.mapping.abort(),
+                        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+                        ['<Tab>'] = cmp.mapping.select_next_item({behavior = SelectBehavior.Select}),
+                        ['<S-Tab>'] = cmp.mapping.select_prev_item({behavior = SelectBehavior.Select}),
                     }),
                     snippet = {
                         expand = function(args)
