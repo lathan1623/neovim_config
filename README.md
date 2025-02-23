@@ -1,3 +1,5 @@
+I am not going to take the 10 mintues to figure out how to format this, pls view it raw
+
 Master lists of commands in this config that I use:
 
 <leader> = ' '
