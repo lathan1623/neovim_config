@@ -1,4 +1,4 @@
--- Bootstrap lazy.nvim
+-- TESTING -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
     local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -21,14 +21,75 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.opt.number = true
+vim.opt.relativenumber = true
 vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 4
 vim.opt.smarttab = true
 
+vim.api.nvim_create_autocmd('TermOpen', {
+    group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
+    callback = function()
+        vim.opt.number = false
+        vim.opt.relativenumber = false
+    end,
+})
+
+vim.keymap.set("n", "<leader>st", function()
+    vim.cmd.vnew()
+    vim.cmd.term()
+    vim.cmd("wincmd J")
+    vim.api.nvim_win_set_height(0, 5)
+    vim.cmd("startinsert")
+end)
+
 -- Setup lazy.nvim
 require("lazy").setup({
     spec = {
+      {
+            'abecodes/tabout.nvim',
+            lazy = false,
+            config = function()
+              require('tabout').setup {
+                tabkey = '<Tab>', -- key to trigger tabout, set to an empty string to disable
+                backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
+                act_as_tab = true, -- shift content if tab out is not possible
+                act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+                default_tab = '<C-t>', -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
+                default_shift_tab = '<C-d>', -- reverse shift default action,
+                enable_backwards = true, -- well ...
+                completion = false, -- if the tabkey is used in a completion pum
+                tabouts = {
+                  { open = "'", close = "'" },
+                  { open = '"', close = '"' },
+                  { open = '`', close = '`' },
+                  { open = '(', close = ')' },
+                  { open = '[', close = ']' },
+                  { open = '{', close = '}' }
+                },
+                ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
+                exclude = {} -- tabout will ignore these filetypes
+              }
+            end,
+            dependencies = { -- These are optional
+              "nvim-treesitter/nvim-treesitter",
+              "L3MON4D3/LuaSnip",
+              "hrsh7th/nvim-cmp"
+            },
+            opt = true,  -- Set this to true if the plugin is optional
+            event = 'InsertCharPre', -- Set the event to 'InsertCharPre' for better compatibility
+            priority = 1000,
+          },
+          {
+            "L3MON4D3/LuaSnip",
+            keys = function()
+              -- Disable default tab keybinding in LuaSnip
+              return {}
+            end,
+          },
+                {
+                    "vim-airline/vim-airline"
+        },
         {
             'tpope/vim-fugitive',
             config = function()
@@ -36,16 +97,10 @@ require("lazy").setup({
             end
         },  
         {
-            'projekt0n/github-nvim-theme',
-            name = 'github-theme',
-            lazy = false,
-            priority = 1000,
+            "blazkowolf/gruber-darker.nvim",
             config = function()
-                require('github-theme').setup({
-                    --...
-                })
-            vim.cmd('colorscheme github_dark_dimmed')
-            end,
+                vim.cmd.colorscheme("gruber-darker")
+            end
         },
         {
             'nvim-treesitter/nvim-treesitter',
@@ -121,8 +176,8 @@ require("lazy").setup({
                     },
                     mapping = cmp.mapping.preset.insert({
                         ['<C-Space>'] = cmp.mapping.complete(),
-                        ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-                        ['<C-d>'] = cmp.mapping.scroll_docs(4),
+                        ['<C-U>'] = cmp.mapping.scroll_docs(-4),
+                        ['<C-D>'] = cmp.mapping.scroll_docs(4),
                         ['<C-e>'] = cmp.mapping.abort(),
                         ['<C-y>'] = cmp.mapping.confirm({ select = true }),
                         ['<Tab>'] = cmp.mapping.select_next_item({behavior = SelectBehavior.Select}),
@@ -153,6 +208,13 @@ require("lazy").setup({
       vim.opt.signcolumn = 'yes'
     end,
     config = function()
+      local lspconfig = require('lspconfig')
+      lspconfig.rust_analyzer.setup({
+        on_attach = function(client, bufnr)
+        vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+      end
+      })
+
       local lsp_defaults = require('lspconfig').util.default_config
 
       -- Add cmp_nvim_lsp capabilities settings to lspconfig
@@ -196,17 +258,6 @@ require("lazy").setup({
     end
   },
   {
-    "nvim-tree/nvim-tree.lua",
-    version = "*",
-    lazy = false,
-    dependencies = {
-        "nvim-tree/nvim-web-devicons",
-    },
-    config = function()
-        require("nvim-tree").setup {}
-    end,
-  },
-  {
     'windwp/nvim-autopairs',
     event = "InsertEnter",
     config = true
@@ -217,3 +268,8 @@ require("lazy").setup({
     -- automatically check for plugin updates
     checker = { enabled = true },
 })
+
+
+
+
+
