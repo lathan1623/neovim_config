@@ -22,9 +22,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.tabstop = 4
+vim.opt.tabstop = 2
 vim.opt.expandtab = true
-vim.opt.shiftwidth = 4
+vim.opt.shiftwidth = 2
 vim.opt.smarttab = true
 
 vim.api.nvim_create_autocmd('TermOpen', {
@@ -105,14 +105,33 @@ require("lazy").setup({
         {
             'nvim-treesitter/nvim-treesitter',
             build = ':TSUpdate',
-            main = 'nvim-treesitter.configs',
             opts = {
                 ensure_installed = { 'rust', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go', 'java', 'javascript', 'typescript' },
                 auto_install = true,
                 highlight = {
                     enable = true,
+                },
+                autotag = {
+                  enable = true,
                 }
             },
+            config = function(_, opts)
+              require("nvim-treesitter").setup(opts)
+            end,
+        },
+        {
+          "windwp/nvim-ts-autotag",
+          event = "InsertEnter",
+          dependencies = { "nvim-treesitter/nvim-treesitter"},
+          config = function()
+            require("nvim-ts-autotag").setup({
+              opts = {
+                enable_close = true,
+                enable_rename = true,
+                enable_close_on_slash = false,
+              },
+            })
+          end,
         },
         {
             'nvim-telescope/telescope.nvim',
@@ -256,6 +275,9 @@ require("lazy").setup({
         }
       })
     end
+  },
+  {
+
   },
   {
     'windwp/nvim-autopairs',
