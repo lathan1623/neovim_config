@@ -15,7 +15,7 @@
 
 ---
 
-## LSP (Language Server Protocol)
+## LSP
 
 | Command        | Action                                |
 |----------------|----------------------------------------|
