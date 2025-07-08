@@ -1,29 +1,45 @@
-Master lists of commands in this config that I use:
+# Master List of Commands in This Config
 
-<leader> = ' '
+**Note:** `<leader>` is mapped to `' '` (spacebar).
 
-Search:
-<leader>pf - Telescope find files
-<leader>u - Telescope undo
-<C-p> - git find files
-<leader>ps - Grep (requires ripgrep to be installed)
+---
 
-LSP:
-<C-u> - scroll up in docs
-<C-d> - scroll down in docs
-<C-e> - autocomplete abort
-<C-y> - autocomplete accept
-<Tab> - select next autocomplete item
-<S-Tab> - select previous autocomplete item
-:Mason - view available LSPs
+## Search
 
-K - hover 
-gd - definition
-gD - declaration
-gi - implementation
-go - type definition
-gr - references
-gs - signature help
-<F2> - rename
-x - format
-<F4> - code action
+| Command        | Action                                |
+|----------------|----------------------------------------|
+| `<leader>pf`   | Telescope find files                   |
+| `<leader>u`    | Telescope undo                         |
+| `<C-p>`        | Git find files                         |
+| `<leader>ps`   | Grep (requires `ripgrep` to be installed) |
+
+---
+
+## LSP (Language Server Protocol)
+
+| Command        | Action                                |
+|----------------|----------------------------------------|
+| `<C-u>`        | Scroll up in docs                      |
+| `<C-d>`        | Scroll down in docs                    |
+| `<C-e>`        | Autocomplete abort                     |
+| `<C-y>`        | Autocomplete accept                    |
+| `<Tab>`        | Select next autocomplete item          |
+| `<S-Tab>`      | Select previous autocomplete item      |
+| `:Mason`       | View available LSPs                    |
+
+---
+
+## Common LSP Actions
+
+| Command        | Action                                |
+|----------------|----------------------------------------|
+| `K`            | Hover                                  |
+| `gd`           | Go to definition                       |
+| `gD`           | Go to declaration                      |
+| `gi`           | Go to implementation                   |
+| `go`           | Go to type definition                  |
+| `gr`           | Go to references                       |
+| `gs`           | Signature help                         |
+| `<F2>`         | Rename                                 |
+| `x`            | Format                                 |
+| `<F4>`         | Code action                            |
