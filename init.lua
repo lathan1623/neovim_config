@@ -27,6 +27,8 @@ vim.opt.expandtab = true
 vim.opt.shiftwidth = 2
 vim.opt.smarttab = true
 
+vim.keymap.set("v", "<leader>c", [[:w !clip.exe<CR>]], { noremap = true, silent = true })
+
 vim.api.nvim_create_autocmd('TermOpen', {
     group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
     callback = function()
@@ -42,6 +44,21 @@ vim.keymap.set("n", "<leader>st", function()
     vim.api.nvim_win_set_height(0, 5)
     vim.cmd("startinsert")
 end)
+
+if vim.fn.has('wsl') == 1 then
+  vim.g.clipboard = {
+    name = 'WslClipboard',
+    copy = {
+      ['+'] = 'clip.exe',
+      ['*'] = 'clip.exe',
+    },
+    paste = {
+      ['+'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+      ['*'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    },
+    cache_enabled = 0,
+  }
+end
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -96,6 +113,11 @@ require("lazy").setup({
                 vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
             end
         },  
+        {
+          "dmtrKovalenko/fold-imports.nvim",
+          opts = {},
+          event = "BufRead"
+        },
         {
             "blazkowolf/gruber-darker.nvim",
             config = function()
@@ -285,10 +307,56 @@ require("lazy").setup({
     config = true
     -- use opts = {} for passing setup options
     -- this is equivalent to setup({}) function
-  }
+  },
+  {
+    "simrat39/rust-tools.nvim",
+    ft = { "rust" },
+    dependencies = {
+      "neovim/nvim-lspconfig",
+      "mfussenegger/nvim-dap",
+      "nvim-lua/plenary.nvim",
     },
-    -- automatically check for plugin updates
-    checker = { enabled = true },
+    config = function()
+      local rt = require("rust-tools")
+      local dap = require("dap")
+
+      dap.configurations.rust = {
+        {
+          name = "Debug executable",
+          type = "rt_lldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to executable", vim.fn.getcwd() .. "/target/debug/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+          args = {},
+        },
+      }
+
+      rt.setup({
+        server = {
+          standalone = false,
+          settings = {
+            ["rust-analyzer"] = {
+              checkOnSave = {
+                command = "clippy",
+              },
+            },
+          },
+        },
+
+        dap = {
+          adapter = require("rust-tools.dap").get_codelldb_adapter(
+            vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/adapter/codelldb",
+            vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/lldb/lib/liblldb.so"
+          ),
+        },
+      })
+    end,
+  }
+  },
+    checker = { enabled = true }
 })
 
 
